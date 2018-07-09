@@ -49,6 +49,9 @@ public:
 
         auto tu = create_tu(lang, fpath, src, args);
 
+        // this speedup further completion, I don't know why
+        update_tu(tu, lang, fpath, src);
+
         if (!tu)
             return;
 
@@ -147,13 +150,14 @@ private:
         //                                                     vc_unsavedf.size(),
         //                                                     vc_unsavedf.data());
 
-        // tu_flags |= CXTranslationUnit_KeepGoing;
-        // tu_flags |= CXTranslationUnit_CacheCompletionResults;
-        // tu_flags |= CXTranslationUnit_SkipFunctionBodies;
-        // tu_flags |= CXTranslationUnit_Incomplete;
+        // CXTranslationUnit_SkipFunctionBodies speedup the parsing
         unsigned tu_flags = CXTranslationUnit_DetailedPreprocessingRecord |
-                            CXTranslationUnit_PrecompiledPreamble;
-        // tu_flags |= CXTranslationUnit_CacheCompletionResults;
+                            CXTranslationUnit_PrecompiledPreamble |
+                            CXTranslationUnit_KeepGoing |
+                            CXTranslationUnit_CacheCompletionResults |
+                            CXTranslationUnit_SkipFunctionBodies |
+                            CXTranslationUnit_Incomplete |
+                            CXTranslationUnit_CacheCompletionResults;
 
         auto tu = clang_parseTranslationUnit(idx_,
                                              fpath.c_str(),
